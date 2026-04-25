@@ -186,7 +186,7 @@ ISC
 
 ## 👨‍💻 Autor
 
-Desenvolvido por Cristiano
+Desenvolvido por Leafar
 
 ---
 
