@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+body {
+  font-family: Arial, sans-serif;
+  font-size: 30px;
+  display:flex;
+  align-items: flex-end;
+  background: transparent;
+  justify-content:flex-end;
+}
+
+#username {
+  color: #ffd166;      /* dourado */
+  font-weight: bold;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.box {
+  display:flex;
+  flex-direction: row;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  padding: 16px;
+  border-radius: 12px;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+
+  align-items:stretch;
+  align-content: flex-start;
+}
+.box.show {
+  display: flex;
+  opacity: 1;
+}
+
+.avatar {
+  display:flex;
+  width: 50px;
+  border-radius: 50%;
+  padding: 5px;
+}
+
+#coluna{
+  display:flex;
+  flex-direction: column;
+}
+#content {
+  max-width: 300px;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+img.content {
+  max-width: 700px;      /* largura máxima */
+  max-height: 500px;     /* altura máxima */
+  width: auto;
+  height: auto;
+  margin-top: 10px;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+  .emoji {
+  font-size: 1.3em;
+  line-height: 1;
+}
+
+
+</style>
+</head>
+
+<body>
+  <div class="box" id="box">
+    <div>
+      <img id="avatar" class="avatar">
+    </div>
+
+    <div id="coluna">
+      <strong id="username"></strong>
+      <p id="content"></p>
+      <img id="image" class="content">
+
+    </div>
+  </div>
+
+<script>
+let lastTimestamp = 0;
+
+async function loadData() {
+  const res = await fetch("data.json?_=" + Date.now());
+  const data = await res.json();
+
+  const box = document.getElementById("box");
+
+  // 🔽 FADE-OUT
+  if (data.hide) {
+    box.classList.remove("show");
+
+    setTimeout(() => {
+      box.style.display = "none";
+    }, 500);
+
+    lastTimestamp = 0;
+    return;
+  }
+
+  // Evita render repetido
+  if (!data.timestamp || data.timestamp === lastTimestamp) return;
+  lastTimestamp = data.timestamp;
+
+  // 🔼 FADE-IN
+  box.style.display = "flex";
+  box.classList.add("show");
+
+  document.getElementById("username").innerText = data.username;
+  document.getElementById("avatar").src = data.avatar;
+  document.getElementById("content").innerHTML =
+  data.content.replace(
+    /([\p{Emoji_Presentation}\p{Extended_Pictographic}])/gu,
+    '<span class="emoji">$1</span>'
+  );
+
+  const img = document.getElementById("image");
+  if (data.image) {
+    img.src = data.image;
+    img.style.display = "block";
+  } else {
+    img.style.display = "none";
+  }
+}
+
+setInterval(loadData, 1000);
+</script>
+
+
+</body>
+</html>
